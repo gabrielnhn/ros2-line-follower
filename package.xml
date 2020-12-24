@@ -3,7 +3,7 @@
 <package format="3">
   <name>follower</name>
   <version>0.0.0</version>
-  <description>Have a turtlebot follow a RoboCore style track </description>
+  <description>Have a turtlebot follow a Robotrace track </description>
   <maintainer email="gabrielnhn@ufpr.br">Gabriel Nascarella Hishida</maintainer>
   <license>TODO: License declaration</license>
 
