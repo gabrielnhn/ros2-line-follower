@@ -16,7 +16,7 @@ setup(
     maintainer='Gabriel Nascarella Hishida',
     maintainer_email='gabrielnhn@ufpr.br',
     description='Have a turtlebot follow a Robotrace track ',
-    license='TODO: License declaration',
+    license='MIT',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
