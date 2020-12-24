@@ -26,6 +26,7 @@ def image_callback(msg):
     """Function to be called whenever a new Image message arrives"""
     global image_input
     image_input = bridge.imgmsg_to_cv2(msg,desired_encoding='bgr8')
+    node.get_logger().info('Received image')
 
 def get_contour_centroid(mask, out):
     """
@@ -61,6 +62,7 @@ def get_contour_centroid(mask, out):
 
 def main():
     global error
+    global image_input
 
     # Wait for the first image to be received
     while type(image_input) != np.ndarray:
@@ -139,10 +141,9 @@ upper_bgr_values = np.array([238, 142, 158])
 
 rclpy.init()
 node = Node('follower')
-publisher = node.create_publisher(Twist, 'cmd_vel', 3)
+publisher = node.create_publisher(Twist, '/cmd_vel', 3)
 
-subscription = node.create_subscription(Image, 'camera/image_raw', image_callback, 10)
-
+subscription = node.create_subscription(Image, '/camera/image_raw', image_callback, 10)
 timer_period = 0.06 # seconds
 
 try:
