@@ -4,10 +4,10 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
 
-import cv2
 import numpy as np
+import cv2
 import cv_bridge
-
+import sleep
 
 # Create a bridge between ROS and OpenCV
 bridge = cv_bridge.CvBridge()
@@ -59,7 +59,7 @@ def get_contour_centroid(mask, out):
 
     return centroid
 
-def timer_callback():
+def main():
     global error
 
     # Wait for the first image to be received
@@ -130,6 +130,7 @@ def timer_callback():
 
         # Publish the message to 'cmd_vel'
         publisher.publish(message)
+        time.sleep(timer_period)
 
 
 # BGR values to filter only the color of the line
@@ -143,10 +144,6 @@ publisher = node.create_publisher(Twist, 'cmd_vel', 3)
 subscription = node.create_subscription(Image, 'camera/image_raw', image_callback, 10)
 
 timer_period = 0.06 # seconds
-publisher_timer = node.create_timer(timer_period, timer_callback)
-
-def main():
-    rclpy.spin(node)
 
 try:
     main()
