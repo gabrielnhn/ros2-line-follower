@@ -63,10 +63,11 @@ def get_contour_centroid(mask, out):
 def main():
     global error
     global image_input
+    global just_seen
 
     # Wait for the first image to be received
     while type(image_input) != np.ndarray:
-        pass
+        rclpy.spin_once(node)
     
     height, width, _ = image_input.shape
 
@@ -107,7 +108,7 @@ def main():
             if just_seen:
                 just_seen = False
                 error = error * 1.2
-            message.linear.x = 0
+            message.linear.x = 0.0
 
 
         # Create an empty Twist message, then give it values
@@ -133,6 +134,7 @@ def main():
         # Publish the message to 'cmd_vel'
         publisher.publish(message)
         time.sleep(timer_period)
+        rclpy.spin_once(node)
 
 
 # BGR values to filter only the color of the line
@@ -143,7 +145,9 @@ rclpy.init()
 node = Node('follower')
 publisher = node.create_publisher(Twist, '/cmd_vel', 3)
 
-subscription = node.create_subscription(Image, '/camera/image_raw', image_callback, 10)
+subscription = node.create_subscription(Image, 'camera/image_raw',
+                                        image_callback,
+                                        rclpy.qos.qos_profile_sensor_data)
 timer_period = 0.06 # seconds
 
 try:
