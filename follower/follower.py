@@ -140,8 +140,7 @@ rclpy.init()
 node = Node('follower')
 publisher = node.create_publisher(Twist, 'cmd_vel', 3)
 
-subscription = node.create_subscription(
-        Image, 'camera/image_raw', image_callback, 10)
+subscription = node.create_subscription(Image, 'camera/image_raw', image_callback, 10)
 
 timer_period = 0.06 # seconds
 publisher_timer = node.create_timer(timer_period, timer_callback)
