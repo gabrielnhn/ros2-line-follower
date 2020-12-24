@@ -7,7 +7,7 @@ from geometry_msgs.msg import Twist
 import numpy as np
 import cv2
 import cv_bridge
-import sleep
+import time
 
 # Create a bridge between ROS and OpenCV
 bridge = cv_bridge.CvBridge()
