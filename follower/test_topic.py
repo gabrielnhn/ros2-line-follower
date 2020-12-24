@@ -1,9 +1,8 @@
 import rclpy
-
 from sensor_msgs.msg import Image
 
 def callback(msg):
-    node.get_logger().info('Received {}'.format(msg.header))
+    print('Received {}'.format(msg.header))
 
 def main():
     rclpy.init()
@@ -12,10 +11,12 @@ def main():
     node = rclpy.create_node('tester')
 
     subscription = node.create_subscription(
-        Image, '/camera/image_raw', callback, 10)
+        Image, '/camera/image_raw', callback, rclpy.qos.qos_profile_sensor_data)
     subscription  # prevent unused variable warning
 
-    rclpy.spin(node)
+    while rclpy.ok():
+        print('waiting')
+        rclpy.spin_once(node)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
