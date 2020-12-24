@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
-# ROS library
-import rospy
-# OpenCV
-import cv2
-import numpy as np
-# ROS -> OpenCV bridge
-import cv_bridge
-# ROS message types
+import rclpy
+from rclpy.node import Node
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
 
-import time
+import cv2
+import numpy as np
+import cv_bridge
+
 
 # Create a bridge between ROS and OpenCV
 bridge = cv_bridge.CvBridge()
@@ -24,7 +21,6 @@ just_seen = False
 
 def crop_size(height, width):
     return (1*height//3, height, width//4, 3*width//4)
-
 
 def image_callback(msg):
     """Function to be called whenever a new Image message arrives"""
@@ -63,25 +59,7 @@ def get_contour_centroid(mask, out):
 
     return centroid
 
-
-# BGR values to filter only the color of the line
-lower_bgr_values = np.array([31,  42,  53])
-upper_bgr_values = np.array([238, 142, 158])
-
-
-
-# Initialize node to ROS Master
-rospy.init_node('follower')
-# Subscribe to the topic where the images will be posted
-rospy.Subscriber('camera2/image_raw', Image, image_callback)
-
-# Announce to ROS Master that the node will publish on 'cmd_vel' topic
-publisher = rospy.Publisher('cmd_vel', Twist, queue_size=3)
-
-rate = rospy.Rate(15) # Hz
-
-
-def main():
+def timer_callback():
     global error
 
     # Wait for the first image to be received
@@ -90,7 +68,7 @@ def main():
     
     height, width, _ = image_input.shape
 
-    while not rospy.is_shutdown():
+    while rclpy.ok():
 
         image = image_input.copy()
 
@@ -115,7 +93,7 @@ def main():
 
         message = Twist()
         
-        if 'x' in centroid:
+        if centroid:
             # if there even is a centroid:
             # (as the camera could not be reading any lines)      
             x = centroid['x']
@@ -138,7 +116,7 @@ def main():
         # Plot the boundaries where the image was cropped
         cv2.rectangle(output, (crop_w_start, crop_h_start), (crop_w_stop, crop_h_stop), (0,0,255), 2)
 
-        if 'x' in centroid:
+        if centroid:
             # If there is a line to be followed, print its centroid
             cv2.circle(output, (centroid['x'], crop_h_start + centroid['y']), 5, (0,255,0), 7)
 
@@ -152,14 +130,27 @@ def main():
 
         # Publish the message to 'cmd_vel'
         publisher.publish(message)
-        rate.sleep()
 
+
+# BGR values to filter only the color of the line
+lower_bgr_values = np.array([31,  42,  53])
+upper_bgr_values = np.array([238, 142, 158])
+
+rclpy.init()
+node = Node('follower')
+publisher = node.create_publisher(Twist, 'cmd_vel', 3)
+
+subscription = node.create_subscription(
+        Image, 'camera/image_raw', image_callback, 10)
+
+timer_period = 0.06 # seconds
+publisher_timer = node.create_timer(timer_period, timer_callback)
+
+def main():
+    rclpy.spin(node)
 
 try:
     main()
-except rospy.ROSInterruptException:
-    msg = Twist()
-    msg.linear.x = 0
-    msg.angular.z = 0
-    publisher.publish(msg)
-    print("end")
+except rclpy.exceptions.ROSInterruptException:
+    node.destroy_node()
+    rclpy.shutdown()
