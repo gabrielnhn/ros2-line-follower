@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='Gabriel Nascarella Hishida',
     maintainer_email='gabrielnhn@ufpr.br',
-    description='Have a turtlebot follow a Robotrace track ',
+    description='Have a turtlebot follow a Robotrace track',
     license='MIT',
     tests_require=['pytest'],
     entry_points={
