@@ -172,13 +172,16 @@ def main():
     rclpy.init()
     global node
     node = Node('follower')
+
     global publisher
     publisher = node.create_publisher(Twist, '/cmd_vel', rclpy.qos.qos_profile_system_default)
     subscription = node.create_subscription(Image, 'camera/image_raw',
                                             image_callback,
                                             rclpy.qos.qos_profile_sensor_data)
+
     timer_period = 0.06 # seconds
     timer = node.create_timer(timer_period, timer_callback)
+    
     rclpy.spin(node)
 
 try:
