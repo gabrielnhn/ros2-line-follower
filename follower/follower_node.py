@@ -12,7 +12,7 @@ import cv_bridge
 bridge = cv_bridge.CvBridge()
 
 
-## User-defined macros:
+## User-defined macros: (Update these values to your liking)
 # Minimum size for a contour to be considered
 MIN_AREA = 10000 
 
@@ -33,14 +33,17 @@ error = 0
 just_seen = False
 
 def crop_size(height, width):
-    """Get the measures to crop the image"""
+    """
+    Get the measures to crop the image
+    Output:
+    (Height_upper_boundary, Height_lower_boundary,
+     Width_left_boundary, Width_right_boundary)
+    """
     ## Update these values to your liking.
 
     return (1*height//3, height, width//4, 3*width//4)
 
-    # Height_upper_boundary, Height_lower_boundary,
-        # Width_left_boundary, Width_right_boundary
-
+    
 def image_callback(msg):
     """
     Function to be called whenever a new Image message arrives.
@@ -181,7 +184,7 @@ def main():
 
     timer_period = 0.06 # seconds
     timer = node.create_timer(timer_period, timer_callback)
-    
+
     rclpy.spin(node)
 
 try:
