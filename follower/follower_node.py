@@ -66,9 +66,9 @@ def timer_callback():
     global just_seen
 
     # Wait for the first image to be received
-    while type(image_input) != np.ndarray:
+    if type(image_input) != np.ndarray:
         # rclpy.spin_once(node)
-        pass
+        return
 
     height, width, _ = image_input.shape
 
