@@ -11,14 +11,21 @@ import cv_bridge
 # Create a bridge between ROS and OpenCV
 bridge = cv_bridge.CvBridge()
 
+
 ## User-defined macros:
 # Minimum size for a contour to be considered
 MIN_AREA = 10000 
+
 # Robot's speed when following the line
 LINEAR_SPEED = 0.2
+
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error)
 KP = 1.5/100 
+
+# If the line is completely lost, the error shall be compensated by:
+LOSS_FACTOR = 1.2
+
 
 # Global vars. initial values
 image_input = 0
