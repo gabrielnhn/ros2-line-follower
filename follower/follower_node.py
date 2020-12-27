@@ -12,18 +12,34 @@ import time
 # Create a bridge between ROS and OpenCV
 bridge = cv_bridge.CvBridge()
 
+## User-defined macros:
+# Minimum size for a contour to be considered
+MIN_AREA = 10000 
+# Robot's speed when following the line
+LINEAR_SPEED = 0.2
+# Proportional constant to be applied on speed when turning 
+# (Multiplied by the error)
+KP = 1.5/100 
+
+# Global vars. initial values
 image_input = 0
-MIN_AREA = 10000
 error = 0
-LINEAR = 0.2
-KP = 1.5/100
 just_seen = False
 
 def crop_size(height, width):
+    """Get the measures to crop the image"""
+    ## Update these values to your liking.
+
     return (1*height//3, height, width//4, 3*width//4)
 
+    # Height_upper_boundary, Height_lower_boundary,
+        # Width_left_boundary, Width_right_boundary
+
 def image_callback(msg):
-    """Function to be called whenever a new Image message arrives"""
+    """
+    Function to be called whenever a new Image message arrives.
+    Update the global variable 'image_input'
+    """
     global image_input
     image_input = bridge.imgmsg_to_cv2(msg,desired_encoding='bgr8')
     # node.get_logger().info('Received image')
@@ -31,7 +47,8 @@ def image_callback(msg):
 def get_contour_centroid(mask, out):
     """
     Return the centroid of the largest contour in the binary image 'mask'
-    and draw the contours on 'out'
+    (If there is a contour),
+    and draw all contours on 'out' image
     """ 
     # get a list of contours
     contours, h = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -61,18 +78,21 @@ def get_contour_centroid(mask, out):
     return centroid
 
 def timer_callback():
+    """
+    Function to be called when the timer ticks.
+    According to an image 'image_input', determine the speed of the robot
+    so it can follow the contour
+    """
+
     global error
     global image_input
-    global just_seen
+    global just_seen # a contour
 
     # Wait for the first image to be received
     if type(image_input) != np.ndarray:
-        # rclpy.spin_once(node)
         return
 
     height, width, _ = image_input.shape
-
-    # while rclpy.ok():
 
     image = image_input.copy()
 
@@ -83,37 +103,39 @@ def timer_callback():
     crop = image[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop]
     
     # get a binary picture, where non-zero values represent the line.
+    # (filter the color values so only the contour is seen)
     mask = cv2.inRange(crop, lower_bgr_values, upper_bgr_values)
 
-    cv2.imshow('mask', mask)
-
     # get the centroid of the biggest contour in the picture,
-    # and plot its detail on the bottom part of the output image
+    # and plot its detail on the cropped part of the output image
     output = image
     centroid = get_contour_centroid(mask, output[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop])  
 
-    # error: The difference between the center of the camera
-    # and the center of the line
-
+    # Create an empty Twist message, then give it values
     message = Twist()
     
     if centroid:
         # if there even is a centroid:
         # (as the camera could not be reading any lines)      
         x = centroid['x']
+
+        # error:= The difference between the center of the camera
+        # and the center of the line
         error = x - width//2
         print("Error:{}".format(error))
-        message.linear.x = LINEAR
+
+        message.linear.x = LINEAR_SPEED
         just_seen = True
+
     else:
+        # There is no line in the image. 
+        # Turn on the spot to find it again. 
         if just_seen:
             just_seen = False
             error = error * 1.2
         message.linear.x = 0.0
 
-
-    # Create an empty Twist message, then give it values
-    # THESE ARE THE CONTROL VALUES TO BE CHANGED AND TESTED
+    # Determine the speed to turn and get the line in the center of the camera.
     message.angular.z = float(error) * -KP
     print("Angular Z: {}".format(message.angular.z))
 
@@ -121,21 +143,19 @@ def timer_callback():
     cv2.rectangle(output, (crop_w_start, crop_h_start), (crop_w_stop, crop_h_stop), (0,0,255), 2)
 
     if centroid:
-        # If there is a line to be followed, print its centroid
+        # plot the centroid on the image
         cv2.circle(output, (centroid['x'], crop_h_start + centroid['y']), 5, (0,255,0), 7)
 
-    # Uncomment to print the binary picture
+    # Uncomment to show the binary picture
     #cv2.imshow("mask", mask)
 
     # Show the output image to the user
     cv2.imshow("output", output)
-    # Print the image for 5milis, then resume the execution
+    # Print the image for 5milis, then resume execution
     cv2.waitKey(5)
 
     # Publish the message to 'cmd_vel'
     publisher.publish(message)
-    # time.sleep(timer_period)
-    # rclpy.spin_once(node)
 
 
 # BGR values to filter only the color of the line
