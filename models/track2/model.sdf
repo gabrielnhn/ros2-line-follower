@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.4">
+   <model name="track2">
+      <static>true</static>
+      <link name="link">
+         <!-- <collision name="collision">
+            <geometry>
+               <plane>
+                  <normal>0 0 1</normal>
+                  <size>5 5</size>
+               </plane>
+            </geometry>
+            <surface>
+               <friction>
+                  <ode>
+                     <mu>100</mu>
+                     <mu2>50</mu2>
+                  </ode>
+               </friction>
+            </surface>
+         </collision> -->
+         <visual name="visual">
+            <cast_shadows>false</cast_shadows>
+            <geometry>
+               <plane>
+                  <normal>0 0 1</normal>
+                  <size>6 6</size>
+               </plane>
+            </geometry>
+            <material>
+               <script>
+                  <uri>model://track2/materials/scripts</uri>
+                  <uri>model://track2/materials/textures/</uri>
+                  <name>Track2/Image</name>
+               </script>
+            </material>
+         </visual>
+      </link>
+   </model>
+</sdf>
