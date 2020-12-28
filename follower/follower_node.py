@@ -142,7 +142,7 @@ def timer_callback():
         # (as the camera could not be reading any lines)      
         x = centroid['x']
 
-        # error:= The difference between the center of the camera
+        # error:= The difference between the center of the image
         # and the center of the line
         error = x - width//2
         print("Error:{}".format(error))
