@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""
+A ROS2 node used to control a differential drive robot with a camera,
+so it follows the line in a Robotrace style track.
+You may change the parameters to your liking.
+"""
+__author__ = "Gabriel Nascarella Hishida do Nascimento"
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -11,8 +18,7 @@ import cv_bridge
 # Create a bridge between ROS and OpenCV
 bridge = cv_bridge.CvBridge()
 
-
-## User-defined macros: (Update these values to your liking)
+## User-defined parameters: (Update these values to your liking)
 # Minimum size for a contour to be considered
 MIN_AREA = 5000 
 
