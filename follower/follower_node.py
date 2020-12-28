@@ -32,6 +32,9 @@ KP = 1.5/100
 # If the line is completely lost, the error shall be compensated by:
 LOSS_FACTOR = 1.2
 
+# Send messages every $TIMER_PERIOD seconds
+TIMER_PERIOD = 0.06
+
 
 # Global vars. initial values
 image_input = 0
@@ -188,8 +191,7 @@ def main():
                                             image_callback,
                                             rclpy.qos.qos_profile_sensor_data)
 
-    timer_period = 0.06 # seconds
-    timer = node.create_timer(timer_period, timer_callback)
+    timer = node.create_timer(TIMER_PERIOD, timer_callback)
 
     rclpy.spin(node)
 
