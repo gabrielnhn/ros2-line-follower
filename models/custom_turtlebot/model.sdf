@@ -416,6 +416,7 @@
     <link name="camera2_link"/>
 
     <link name="camera2_rgb_optical_frame">
+      <!-- <gravity>0</gravity> -->
       <inertial>
         <pose>0.076 0.0 0.093 0 0 0</pose>
         <inertia>
@@ -426,7 +427,7 @@
           <iyz>0.000</iyz>
           <izz>0.001</izz>
         </inertia>
-        <mass>0.035</mass>
+        <mass>0.1</mass>
       </inertial>
 
       <pose>0.076 0.0 0.093 0 0 0</pose>
@@ -456,13 +457,7 @@
         </camera>
           <plugin name="camera2_driver" filename="libgazebo_ros_camera.so">
             <ros>
-              <!-- <namespace>test_cam</namespace> -->
-              <!-- <remapping>image_raw:=image_demo</remapping> -->
-              <!-- <remapping>camera_info:=camera_info_demo</remapping> -->
             </ros>
-            <!-- camera_name>omit so it defaults to sensor name</camera_name-->
-            <!-- frame_name>omit so it defaults to link name</frameName-->
-            <!-- <hack_baseline>0.07</hack_baseline> -->
           </plugin>
       </sensor>
     </link>
