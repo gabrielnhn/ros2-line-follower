@@ -14,7 +14,7 @@
 * Build the package (`colcon build --symlink-install`)
 
 
-## Running the simulation:
+## Launching the simulation:
 #### (Requires both `gazebo_ros` and `turtlebot3_gazebo` packages)
 
 * Add `follower/models` to your `$GAZEBO_MODEL_PATH` environment variable
