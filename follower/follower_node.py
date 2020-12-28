@@ -156,7 +156,7 @@ def timer_callback():
         cv2.circle(output, (centroid['x'], crop_h_start + centroid['y']), 5, (0,255,0), 7)
 
     # Uncomment to show the binary picture
-    cv2.imshow("mask", mask)
+    #cv2.imshow("mask", mask)
 
     # Show the output image to the user
     cv2.imshow("output", output)
