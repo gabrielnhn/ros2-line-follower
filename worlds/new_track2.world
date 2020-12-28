@@ -52,7 +52,7 @@
     </model>
      
     <include>
-      <pose>-0.5 -2 0.01 0 0 0</pose>
+      <pose>-0.5 -1.6 0.01 0 0 0</pose>
       <uri>model://custom_turtlebot</uri>
     </include>
 
