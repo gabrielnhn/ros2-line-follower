@@ -35,6 +35,11 @@ LOSS_FACTOR = 1.2
 # Send messages every $TIMER_PERIOD seconds
 TIMER_PERIOD = 0.06
 
+# BGR values to filter only the selected color range
+lower_bgr_values = np.array([31,  42,  53])
+upper_bgr_values = np.array([255, 255, 255])
+
+
 
 # Global vars. initial values
 image_input = 0
@@ -175,10 +180,6 @@ def timer_callback():
     # Publish the message to 'cmd_vel'
     publisher.publish(message)
 
-
-# BGR values to filter only the color of the line
-lower_bgr_values = np.array([31,  42,  53])
-upper_bgr_values = np.array([255, 255, 255])
 
 def main():
     rclpy.init()
