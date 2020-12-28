@@ -2,7 +2,7 @@
 
 ### Control a ROS2 differential drive robot to run on a Robocore line track
 
-### Use it on your own robot, or try out the demo using a custom turtlebot on Gazebo.
+### Use it on your own robot, or try out the demo using a custom-made simulation on Gazebo.
 
 
 
