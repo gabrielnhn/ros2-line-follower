@@ -28,3 +28,7 @@
 ![screenshot1](docs/screenshots/1.png)
 ![screenshot2](docs/screenshots/2.png)
 ![screenshot3](docs/screenshots/3.png)
+
+## Special thanks to:
+* The authors of `Programming Robots with ROS: A Practical Introduction to the Robot Operating System` (and reference code in https://github.com/osrf/rosbook)
+* The programmers working on @ROBOTIS for their work in https://github.com/ROBOTIS-GIT/turtlebot3_simulations
