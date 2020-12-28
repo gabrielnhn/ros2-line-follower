@@ -365,15 +365,15 @@
         <mass>0.035</mass>
       </inertial>
 
-      <collision name="collision">
+      <!-- <collision name="collision">
         <pose>0.076 0.0 0.093 0 0 0</pose>
         <geometry>
           <box>
             <size>0.008 0.130 0.022</size>
           </box>
         </geometry>
-      </collision>
-      <pose>0.076 0.0 0.093 0 0 0</pose>
+      </collision> -->
+      <pose>0.1 0 0.2 0 1.0 0</pose>
       <sensor name="camera" type="camera">
         <always_on>true</always_on>
         <visualize>true</visualize>
@@ -457,7 +457,7 @@
     <joint name="camera_joint" type="fixed">
       <parent>base_link</parent>
       <child>camera_link</child>
-      <pose>0.073 -0.011 0.084 0 0 0</pose>
+      <pose>0.073 -0.011 0.084 0 5.6 0</pose>
       <axis>
         <xyz>0 0 1</xyz>
       </axis>
@@ -466,7 +466,7 @@
     <joint name="camera_rgb_joint" type="fixed">
       <parent>camera_link</parent>
       <child>camera_rgb_optical_frame</child>
-      <pose>0.003 0.011 0.009 0 0 0</pose>
+      <pose>0.003 0.011 0.009 0 5.6 0</pose>
       <axis>
         <xyz>0 0 1</xyz>
       </axis>
