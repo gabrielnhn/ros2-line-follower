@@ -46,6 +46,7 @@
     <model name="Track2">
       <static>1</static>
       <include>
+        <pose>0 0 0.002 0.0 0.0 0.0</pose>
         <uri>model://track2</uri>
       </include>
     </model>
