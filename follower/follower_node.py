@@ -14,7 +14,7 @@ bridge = cv_bridge.CvBridge()
 
 ## User-defined macros: (Update these values to your liking)
 # Minimum size for a contour to be considered
-MIN_AREA = 8000 
+MIN_AREA = 7000 
 
 # Robot's speed when following the line
 LINEAR_SPEED = 0.2
