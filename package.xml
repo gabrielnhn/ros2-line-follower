@@ -3,7 +3,7 @@
 <package format="3">
   <name>follower</name>
   <version>0.0.0</version>
-  <description>Have a turtlebot follow a Robotrace track</description>
+  <description>Have a differential drive robot follow a Robotrace track by using a camera.</description>
   <maintainer email="gabrielnhn@ufpr.br">Gabriel Nascarella Hishida</maintainer>
   <license>MIT</license>
 
