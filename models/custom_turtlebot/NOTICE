@@ -1,0 +1,6 @@
+The original Turtlebot3 Waffle Pi model was made by ROBOTIS, licensed under Apache License 2.0.
+Copyright 2016 ROBOTIS CO., LTD.
+Authors: Taehun Lim (Darby)
+
+This version of the model is a modification made by Gabriel Nascarella Hishida do Nascimento,
+and these modifications include removing the LiDAR sensor and adjusting the camera position in `model.sdf`.
