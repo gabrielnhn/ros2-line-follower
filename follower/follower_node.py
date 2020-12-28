@@ -156,7 +156,7 @@ def timer_callback():
         cv2.circle(output, (centroid['x'], crop_h_start + centroid['y']), 5, (0,255,0), 7)
 
     # Uncomment to show the binary picture
-    #cv2.imshow("mask", mask)
+    cv2.imshow("mask", mask)
 
     # Show the output image to the user
     cv2.imshow("output", output)
@@ -169,7 +169,7 @@ def timer_callback():
 
 # BGR values to filter only the color of the line
 lower_bgr_values = np.array([31,  42,  53])
-upper_bgr_values = np.array([238, 142, 158])
+upper_bgr_values = np.array([255, 255, 255])
 
 def main():
     rclpy.init()
