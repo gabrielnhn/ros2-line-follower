@@ -26,10 +26,10 @@ MIN_AREA = 5000
 LINEAR_SPEED = 0.2
 
 # Proportional constant to be applied on speed when turning 
-# (Multiplied by the error)
+# (Multiplied by the error value)
 KP = 1.5/100 
 
-# If the line is completely lost, the error shall be compensated by:
+# If the line is completely lost, the error value shall be compensated by:
 LOSS_FACTOR = 1.2
 
 # Send messages every $TIMER_PERIOD seconds
