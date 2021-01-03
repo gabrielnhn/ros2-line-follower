@@ -10,6 +10,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
+from std_srvs.srv import Empty
 
 import numpy as np
 import cv2
@@ -55,7 +56,7 @@ image_input = 0
 error = 0
 just_seen_line = False
 just_seen_right_mark = False
-should_move = True
+should_move = False
 right_mark_count = 0
 finalization_countdown = None
 
@@ -70,7 +71,29 @@ def crop_size(height, width):
 
     return (1*height//3, height, width//4, 3*width//4)
 
-    
+def start_follower_callback(request, response):
+    """
+    Start the robot.
+    In other words, allow it to move (again)
+    """
+    global should_move
+    global right_mark_count
+    global finalization_countdown
+    should_move = True
+    right_mark_count = 0
+    finalization_countdown = None
+    return response
+
+def stop_follower_callback(request, response):
+    """
+    Stop the robot
+    """
+    global should_move
+    global finalization_countdown
+    should_move = False
+    finalization_countdown = None
+    return response
+
 def image_callback(msg):
     """
     Function to be called whenever a new Image message arrives.
@@ -104,7 +127,6 @@ def get_contour_data(mask, out):
 
             if (M['m00'] > MIN_AREA_TRACK):
                 # Contour is part of the track
-                largest_area = M['m00']
                 line['x'] = crop_w_start + int(M["m10"]/M["m00"])
                 line['y'] = int(M["m01"]/M["m00"])
 
@@ -216,8 +238,6 @@ def timer_callback():
                 finalization_countdown = int(FINALIZATION_PERIOD / TIMER_PERIOD) + 1
                 print("Finalization Process has begun!")
 
-                ### TESTING
-                cv2.imwrite('tests/image.png', output)
             
             just_seen_right_mark = True
     else:
@@ -272,11 +292,14 @@ def main():
 
     timer = node.create_timer(TIMER_PERIOD, timer_callback)
 
+    start_service = node.create_service(Empty, 'start_follower', start_follower_callback)
+    stop_service = node.create_service(Empty, 'stop_follower', stop_follower_callback)
+
     rclpy.spin(node)
 
 try:
     main()
-except rclpy.exceptions.ROSInterruptException:
+except (rclpy.exceptions.ROSInterruptException, KeyboardInterrupt):
     empty_message = Twist()
     publisher.publish(empty_message)
 
