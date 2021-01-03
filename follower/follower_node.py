@@ -38,6 +38,10 @@ LOSS_FACTOR = 1.2
 # Send messages every $TIMER_PERIOD seconds
 TIMER_PERIOD = 0.06
 
+# When about to end the track, move for ~$FINALIZATION_PERIOD more seconds
+FINALIZATION_PERIOD = 1.5
+
+
 # BGR values to filter only the selected color range
 lower_bgr_values = np.array([31,  42,  53])
 upper_bgr_values = np.array([255, 255, 255])
@@ -49,7 +53,7 @@ image_input = 0
 error = 0
 just_seen = False
 should_move = True
-
+finalization_countdown = None
 
 def crop_size(height, width):
     """
@@ -143,6 +147,7 @@ def timer_callback():
     global image_input
     global just_seen # a contour
     global should_move
+    global finalization_countdown
 
     # Wait for the first image to be received
     if type(image_input) != np.ndarray:
@@ -170,8 +175,13 @@ def timer_callback():
 
     if mark_side != None:
         print("mark_side: {}".format(mark_side))
-        if mark_side == "right":
-            should_move = False
+
+        if (mark_side == "right") and (finalization_countdown == None):
+            # Start final countdown to stop the robot
+            finalization_countdown = int(FINALIZATION_PERIOD / TIMER_PERIOD) + 1
+            print("Finalization Process has begun!")
+
+            
     
     
     # Create an empty Twist message, then give it values
@@ -218,6 +228,15 @@ def timer_callback():
     # Print the image for 5milis, then resume execution
     cv2.waitKey(5)
 
+    # Check for final countdown
+    if finalization_countdown != None:
+        if finalization_countdown > 0:
+            finalization_countdown -= 1
+
+        elif finalization_countdown == 0:
+            should_move = False
+
+
     # Publish the message to 'cmd_vel'
     if should_move:
         publisher.publish(message)
@@ -246,6 +265,6 @@ try:
 except rclpy.exceptions.ROSInterruptException:
     empty_message = Twist()
     publisher.publish(empty_message)
-    
+
     node.destroy_node()
     rclpy.shutdown()
