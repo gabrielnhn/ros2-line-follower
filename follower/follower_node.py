@@ -53,8 +53,10 @@ upper_bgr_values = np.array([255, 255, 255])
 # Global vars. initial values
 image_input = 0
 error = 0
-just_seen = False
+just_seen_line = False
+just_seen_right_mark = False
 should_move = True
+right_mark_count = 0
 finalization_countdown = None
 
 def crop_size(height, width):
@@ -87,9 +89,8 @@ def get_contour_data(mask, out):
     and draw all contours on 'out' image
     """ 
     # get a list of contours
-    contours, h = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    largest_area = 0
     mark = {}
     line = {}
 
@@ -147,8 +148,10 @@ def timer_callback():
 
     global error
     global image_input
-    global just_seen # a contour
+    global just_seen_line
+    global just_seen_right_mark
     global should_move
+    global right_mark_count
     global finalization_countdown
 
     # Wait for the first image to be received
@@ -174,15 +177,12 @@ def timer_callback():
     output = image
     line, mark_side = get_contour_data(mask, output[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop])  
     # also get the side in which the track mark "is"
-
     
-    
-    # Create an empty Twist message, then give it values
     message = Twist()
     
     if line:
-        # if there even is a line:
-        # (as the camera could not be reading any lines)      
+    # if there even is a line in the image:
+    # (as the camera could not be reading any lines)      
         x = line['x']
 
         # error:= The difference between the center of the image
@@ -190,7 +190,7 @@ def timer_callback():
         error = x - width//2
 
         message.linear.x = LINEAR_SPEED
-        just_seen = True
+        just_seen_line = True
 
         # plot the line centroid on the image
         cv2.circle(output, (line['x'], crop_h_start + line['y']), 5, (0,255,0), 7)
@@ -198,8 +198,8 @@ def timer_callback():
     else:
         # There is no line in the image. 
         # Turn on the spot to find it again. 
-        if just_seen:
-            just_seen = False
+        if just_seen_line:
+            just_seen_line = False
             error = error * 1.2
         message.linear.x = 0.0
 
@@ -207,14 +207,21 @@ def timer_callback():
         print("mark_side: {}".format(mark_side))
 
         if (mark_side == "right") and (finalization_countdown == None) and \
-            (abs(error) <= MAX_ERROR):
+            (abs(error) <= MAX_ERROR) and (not just_seen_right_mark):
 
-            # Start final countdown to stop the robot
-            finalization_countdown = int(FINALIZATION_PERIOD / TIMER_PERIOD) + 1
-            print("Finalization Process has begun!")
+            right_mark_count += 1
 
-            ### TESTING
-            cv2.imwrite('tests/image.png', output)
+            if right_mark_count > 1:
+                # Start final countdown to stop the robot
+                finalization_countdown = int(FINALIZATION_PERIOD / TIMER_PERIOD) + 1
+                print("Finalization Process has begun!")
+
+                ### TESTING
+                cv2.imwrite('tests/image.png', output)
+            
+            just_seen_right_mark = True
+    else:
+        just_seen_right_mark = False
 
     
     # Determine the speed to turn and get the line in the center of the camera.
