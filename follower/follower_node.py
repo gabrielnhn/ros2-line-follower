@@ -142,6 +142,7 @@ def timer_callback():
     global error
     global image_input
     global just_seen # a contour
+    global should_move
 
     # Wait for the first image to be received
     if type(image_input) != np.ndarray:
@@ -167,6 +168,12 @@ def timer_callback():
     line, mark_side = get_contour_data(mask, output[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop])  
     # also get the side in which the track mark "is"
 
+    if mark_side != None:
+        print("mark_side: {}".format(mark_side))
+        if mark_side == "right":
+            should_move = False
+    
+    
     # Create an empty Twist message, then give it values
     message = Twist()
     
@@ -197,8 +204,6 @@ def timer_callback():
     message.angular.z = float(error) * -KP
     print("Error: {} | Angular Z: {}, ".format(error, message.angular.z))
     
-    if mark_side != None:
-        print("mark_side: {}".format(mark_side))
 
 
 
@@ -216,6 +221,9 @@ def timer_callback():
     # Publish the message to 'cmd_vel'
     if should_move:
         publisher.publish(message)
+    else:
+        empty_message = Twist()
+        publisher.publish(empty_message)
 
 
 def main():
@@ -236,5 +244,8 @@ def main():
 try:
     main()
 except rclpy.exceptions.ROSInterruptException:
+    empty_message = Twist()
+    publisher.publish(empty_message)
+    
     node.destroy_node()
     rclpy.shutdown()
