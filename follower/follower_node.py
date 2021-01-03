@@ -299,9 +299,10 @@ def main():
 
 try:
     main()
-except (rclpy.exceptions.ROSInterruptException, KeyboardInterrupt):
+except (KeyboardInterrupt, rclpy.exceptions.ROSInterruptException):
     empty_message = Twist()
     publisher.publish(empty_message)
 
     node.destroy_node()
     rclpy.shutdown()
+    exit()
