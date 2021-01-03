@@ -178,7 +178,6 @@ def timer_callback():
         # error:= The difference between the center of the image
         # and the center of the line
         error = x - width//2
-        print("Error:{}".format(error))
 
         message.linear.x = LINEAR_SPEED
         just_seen = True
@@ -196,11 +195,10 @@ def timer_callback():
 
     # Determine the speed to turn and get the line in the center of the camera.
     message.angular.z = float(error) * -KP
-    print("Angular Z: {}".format(message.angular.z))
+    print("Error: {} | Angular Z: {}, ".format(error, message.angular.z))
     
     if mark_side != None:
         print("mark_side: {}".format(mark_side))
-
 
 
 
