@@ -1,6 +1,6 @@
 ## ROS2 Line Follower
 
-### Control a ROS2 differential drive robot to run on a Robocore line track using OpenCV.
+### Control a ROS2 differential drive robot to run in a Robotrace course using OpenCV.
 
 ### Use it on your own robot, or try out the demo using a custom-made simulation on Gazebo.
 
