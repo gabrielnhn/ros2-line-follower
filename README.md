@@ -24,7 +24,7 @@
 #### (Requires both `cv2` and `cv_bridge` python libraries)
 
 * Run the node (`ros2 run follower follower_node`)
-* Start the robot (`ros2 service call /start_follower`)
+* Start the robot (`ros2 service call /start_follower std_srvs/srv/Empty`)
 
 ![screenshot1](docs/screenshots/screenshot1.png)
 ![screenshot2](docs/screenshots/screenshot2.png)
