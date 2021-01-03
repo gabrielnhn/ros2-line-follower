@@ -39,8 +39,10 @@ LOSS_FACTOR = 1.2
 TIMER_PERIOD = 0.06
 
 # When about to end the track, move for ~$FINALIZATION_PERIOD more seconds
-FINALIZATION_PERIOD = 1.5
+FINALIZATION_PERIOD = 4
 
+# The maximum error value for which the robot is still in a straight line
+MAX_ERROR = 30
 
 # BGR values to filter only the selected color range
 lower_bgr_values = np.array([31,  42,  53])
@@ -173,15 +175,6 @@ def timer_callback():
     line, mark_side = get_contour_data(mask, output[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop])  
     # also get the side in which the track mark "is"
 
-    if mark_side != None:
-        print("mark_side: {}".format(mark_side))
-
-        if (mark_side == "right") and (finalization_countdown == None):
-            # Start final countdown to stop the robot
-            finalization_countdown = int(FINALIZATION_PERIOD / TIMER_PERIOD) + 1
-            print("Finalization Process has begun!")
-
-            
     
     
     # Create an empty Twist message, then give it values
@@ -210,6 +203,20 @@ def timer_callback():
             error = error * 1.2
         message.linear.x = 0.0
 
+    if mark_side != None:
+        print("mark_side: {}".format(mark_side))
+
+        if (mark_side == "right") and (finalization_countdown == None) and \
+            (abs(error) <= MAX_ERROR):
+
+            # Start final countdown to stop the robot
+            finalization_countdown = int(FINALIZATION_PERIOD / TIMER_PERIOD) + 1
+            print("Finalization Process has begun!")
+
+            ### TESTING
+            cv2.imwrite('tests/image.png', output)
+
+    
     # Determine the speed to turn and get the line in the center of the camera.
     message.angular.z = float(error) * -KP
     print("Error: {} | Angular Z: {}, ".format(error, message.angular.z))
