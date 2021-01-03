@@ -48,6 +48,8 @@ upper_bgr_values = np.array([255, 255, 255])
 image_input = 0
 error = 0
 just_seen = False
+should_move = True
+
 
 def crop_size(height, width):
     """
@@ -99,7 +101,7 @@ def get_contour_data(mask, out):
                 line['x'] = crop_w_start + int(M["m10"]/M["m00"])
                 line['y'] = int(M["m01"]/M["m00"])
 
-                # plot the area   
+                # plot the area in light blue
                 cv2.drawContours(out, contour, -1, (255,255,0), 1) 
                 cv2.putText(out, str(M['m00']), (int(M["m10"]/M["m00"]), int(M["m01"]/M["m00"])),
                     cv2.FONT_HERSHEY_PLAIN, 2, (255,255,0), 2)
@@ -112,7 +114,7 @@ def get_contour_data(mask, out):
                     mark['y'] = int(M["m01"]/M["m00"])
                     mark['x'] = crop_w_start + int(M["m10"]/M["m00"])
 
-                    # plot the area   
+                    # plot the area in pink
                     cv2.drawContours(out, contour, -1, (255,0,255), 1) 
                     cv2.putText(out, str(M['m00']), (int(M["m10"]/M["m00"]), int(M["m01"]/M["m00"])),
                         cv2.FONT_HERSHEY_PLAIN, 2, (255,0,255), 2)
@@ -121,7 +123,7 @@ def get_contour_data(mask, out):
     if mark and line:
     # if both contours exist
         if mark['x'] > line['x']:
-                mark_side = "right"
+            mark_side = "right"
         else:
             mark_side = "left"
     else:
@@ -181,6 +183,9 @@ def timer_callback():
         message.linear.x = LINEAR_SPEED
         just_seen = True
 
+        # plot the line centroid on the image
+        cv2.circle(output, (line['x'], crop_h_start + line['y']), 5, (0,255,0), 7)
+
     else:
         # There is no line in the image. 
         # Turn on the spot to find it again. 
@@ -189,19 +194,18 @@ def timer_callback():
             error = error * 1.2
         message.linear.x = 0.0
 
-    if mark_side != None:
-        print("mark_side: {}".format(mark_side))
-
     # Determine the speed to turn and get the line in the center of the camera.
     message.angular.z = float(error) * -KP
     print("Angular Z: {}".format(message.angular.z))
+    
+    if mark_side != None:
+        print("mark_side: {}".format(mark_side))
+
+
+
 
     # Plot the boundaries where the image was cropped
     cv2.rectangle(output, (crop_w_start, crop_h_start), (crop_w_stop, crop_h_stop), (0,0,255), 2)
-
-    if line:
-        # plot the line on the image
-        cv2.circle(output, (line['x'], crop_h_start + line['y']), 5, (0,255,0), 7)
 
     # Uncomment to show the binary picture
     #cv2.imshow("mask", mask)
@@ -212,7 +216,8 @@ def timer_callback():
     cv2.waitKey(5)
 
     # Publish the message to 'cmd_vel'
-    publisher.publish(message)
+    if should_move:
+        publisher.publish(message)
 
 
 def main():
