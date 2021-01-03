@@ -19,8 +19,11 @@ import cv_bridge
 bridge = cv_bridge.CvBridge()
 
 ## User-defined parameters: (Update these values to your liking)
-# Minimum size for a contour to be considered
-MIN_AREA = 5000 
+# Minimum size for a contour to be considered anything
+MIN_AREA = 500 
+
+# Minimum size for a contour to be considered part of the track
+MIN_AREA_TRACK = 5000
 
 # Robot's speed when following the line
 LINEAR_SPEED = 0.2
@@ -67,17 +70,20 @@ def image_callback(msg):
     image_input = bridge.imgmsg_to_cv2(msg,desired_encoding='bgr8')
     # node.get_logger().info('Received image')
 
-def get_contour_centroid(mask, out):
+def get_contour_data(mask, out):
     """
-    Return the centroid of the largest contour in the binary image 'mask'
-    (If there is a contour),
+    Return the centroid of the largest contour in
+    the binary image 'mask' (the line) 
+    and return the side in which the smaller contour is (the track mark) 
+    (If there are any of these contours),
     and draw all contours on 'out' image
     """ 
     # get a list of contours
     contours, h = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     largest_area = 0
-    centroid = {}
+    mark = {}
+    line = {}
 
     for contour in contours:
         cv2.drawContours(out, contour, -1, (255,0,0), 1) 
@@ -86,19 +92,38 @@ def get_contour_centroid(mask, out):
         M = cv2.moments(contour)
         # Search more about Image Moments on Wikipedia :)
 
-        if M['m00'] > 0:
-        # if countor.area > 0:
+        if M['m00'] > MIN_AREA:
+        # if countor.area > MIN_AREA:
 
-            # print the area    
+            # plot the area    
             cv2.putText(out, str(M['m00']), (int(M["m10"]/M["m00"]), int(M["m01"]/M["m00"])),
                         cv2.FONT_HERSHEY_PLAIN, 1, (255,0,0), 2)
 
-            if (M['m00'] > MIN_AREA):
+            if (M['m00'] > MIN_AREA_TRACK):
+                # Contour is part of the track
                 largest_area = M['m00']
-                centroid['x'] = crop_w_start + int(M["m10"]/M["m00"])
-                centroid['y'] = int(M["m01"]/M["m00"])
+                line['x'] = crop_w_start + int(M["m10"]/M["m00"])
+                line['y'] = int(M["m01"]/M["m00"])
+            else:
+                # Contour is a track mark
+                if (not mark) or (mark['y'] > int(M["m01"]/M["m00"])):
+                    # if there are more than one mark, consider only 
+                    # the one closest to the robot 
+                    mark['y'] = int(M["m01"]/M["m00"])
+                    mark['x'] = crop_w_start + int(M["m10"]/M["m00"])
+    
 
-    return centroid
+    if mark and line:
+    # if both contours exist
+        if mark['x'] > line['x']:
+                mark_side = "right"
+        else:
+            mark_side = "left"
+    else:
+        mark_side = None
+
+
+    return (line, mark_side)
 
 def timer_callback():
     """
@@ -132,15 +157,16 @@ def timer_callback():
     # get the centroid of the biggest contour in the picture,
     # and plot its detail on the cropped part of the output image
     output = image
-    centroid = get_contour_centroid(mask, output[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop])  
+    line, mark_side = get_contour_data(mask, output[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop])  
+    # also get the side in which the track mark "is"
 
     # Create an empty Twist message, then give it values
     message = Twist()
     
-    if centroid:
-        # if there even is a centroid:
+    if line:
+        # if there even is a line:
         # (as the camera could not be reading any lines)      
-        x = centroid['x']
+        x = line['x']
 
         # error:= The difference between the center of the image
         # and the center of the line
@@ -158,6 +184,9 @@ def timer_callback():
             error = error * 1.2
         message.linear.x = 0.0
 
+    if mark_side != None:
+        print("mark_side: {}".format(mark_side))
+
     # Determine the speed to turn and get the line in the center of the camera.
     message.angular.z = float(error) * -KP
     print("Angular Z: {}".format(message.angular.z))
@@ -165,9 +194,9 @@ def timer_callback():
     # Plot the boundaries where the image was cropped
     cv2.rectangle(output, (crop_w_start, crop_h_start), (crop_w_stop, crop_h_stop), (0,0,255), 2)
 
-    if centroid:
-        # plot the centroid on the image
-        cv2.circle(output, (centroid['x'], crop_h_start + centroid['y']), 5, (0,255,0), 7)
+    if line:
+        # plot the line on the image
+        cv2.circle(output, (line['x'], crop_h_start + line['y']), 5, (0,255,0), 7)
 
     # Uncomment to show the binary picture
     #cv2.imshow("mask", mask)
