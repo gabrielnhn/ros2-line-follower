@@ -86,8 +86,6 @@ def get_contour_data(mask, out):
     line = {}
 
     for contour in contours:
-        cv2.drawContours(out, contour, -1, (255,0,0), 1) 
-        # Print the contour area in blue
         
         M = cv2.moments(contour)
         # Search more about Image Moments on Wikipedia :)
@@ -95,15 +93,17 @@ def get_contour_data(mask, out):
         if M['m00'] > MIN_AREA:
         # if countor.area > MIN_AREA:
 
-            # plot the area    
-            cv2.putText(out, str(M['m00']), (int(M["m10"]/M["m00"]), int(M["m01"]/M["m00"])),
-                        cv2.FONT_HERSHEY_PLAIN, 1, (255,0,0), 2)
-
             if (M['m00'] > MIN_AREA_TRACK):
                 # Contour is part of the track
                 largest_area = M['m00']
                 line['x'] = crop_w_start + int(M["m10"]/M["m00"])
                 line['y'] = int(M["m01"]/M["m00"])
+
+                # plot the area   
+                cv2.drawContours(out, contour, -1, (255,255,0), 1) 
+                cv2.putText(out, str(M['m00']), (int(M["m10"]/M["m00"]), int(M["m01"]/M["m00"])),
+                    cv2.FONT_HERSHEY_PLAIN, 2, (255,255,0), 2)
+            
             else:
                 # Contour is a track mark
                 if (not mark) or (mark['y'] > int(M["m01"]/M["m00"])):
@@ -111,7 +111,12 @@ def get_contour_data(mask, out):
                     # the one closest to the robot 
                     mark['y'] = int(M["m01"]/M["m00"])
                     mark['x'] = crop_w_start + int(M["m10"]/M["m00"])
-    
+
+                    # plot the area   
+                    cv2.drawContours(out, contour, -1, (255,0,255), 1) 
+                    cv2.putText(out, str(M['m00']), (int(M["m10"]/M["m00"]), int(M["m01"]/M["m00"])),
+                        cv2.FONT_HERSHEY_PLAIN, 2, (255,0,255), 2)
+
 
     if mark and line:
     # if both contours exist
