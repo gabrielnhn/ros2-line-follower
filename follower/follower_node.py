@@ -49,6 +49,16 @@ MAX_ERROR = 30
 lower_bgr_values = np.array([31,  42,  53])
 upper_bgr_values = np.array([255, 255, 255])
 
+def crop_size(height, width):
+    """
+    Get the measures to crop the image
+    Output:
+    (Height_upper_boundary, Height_lower_boundary,
+     Width_left_boundary, Width_right_boundary)
+    """
+    ## Update these values to your liking.
+
+    return (1*height//3, height, width//4, 3*width//4)
 
 
 # Global vars. initial values
@@ -60,16 +70,6 @@ should_move = False
 right_mark_count = 0
 finalization_countdown = None
 
-def crop_size(height, width):
-    """
-    Get the measures to crop the image
-    Output:
-    (Height_upper_boundary, Height_lower_boundary,
-     Width_left_boundary, Width_right_boundary)
-    """
-    ## Update these values to your liking.
-
-    return (1*height//3, height, width//4, 3*width//4)
 
 def start_follower_callback(request, response):
     """
