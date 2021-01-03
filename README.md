@@ -1,6 +1,6 @@
 ## ROS2 Line Follower
 
-### Control a ROS2 differential drive robot to run on a Robocore line track
+### Control a ROS2 differential drive robot to run on a Robocore line track using OpenCV.
 
 ### Use it on your own robot, or try out the demo using a custom-made simulation on Gazebo.
 
@@ -15,7 +15,7 @@
 
 
 ## Launching the simulation:
-#### (Requires both `gazebo_ros` and `turtlebot3_gazebo` packages)
+#### (Requires both `gazebo_ros` and `turtlebot3_gazebo` ROS2 packages)
 
 * Add `follower/models` to your `$GAZEBO_MODEL_PATH` environment variable
 * Launch the simulation (`ros2 launch follower new_track.launch.py`)
