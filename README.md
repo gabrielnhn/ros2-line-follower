@@ -34,5 +34,5 @@ For more information, check [docs/about.md](/docs/about.md).
 
 ## Special thanks to:
 * The authors of `Programming Robots with ROS: A Practical Introduction to the Robot Operating System` (and reference code in https://github.com/osrf/rosbook)
-* @ROBOTIS programmers for their work in https://github.com/ROBOTIS-GIT/turtlebot3_simulations, licensed under Apache License 2.0
+* @ROBOTIS programmers for their work in https://github.com/ROBOTIS-GIT/turtlebot3_simulations, licensed under Apache License 2.0 by ROBOTIS CO., LTD.
 * Prof. Eduardo Todt for letting me use this package as the final project of his "Mobile Robotics" course at UFPR.
