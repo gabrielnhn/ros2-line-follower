@@ -3,7 +3,7 @@
 
 **This is a ROS2 package** that offers a node ([follower_node](/follower/follower_node.py)) used to have a differential drive robot  run a Robotrace course, by using a camera and an implemented P controller. The rules of the course and the methods to run in it can be found at [ntf.or.jp](http://www.ntf.or.jp/archives/directory/en/game/taikai/24-rule-rt.pdf).
 
-The packagmade bye also gives the user tools to simulate the `follower_node` on a [modified version](/models/custom_turtlebot/) of the **Turtlebot 3 Waffle Pi**, copyrights **ROBOTIS CO., LTD**, licensed under the [Apache License 2.0](/models/custom_turtlebot/LICENSE).
+The package also gives the user tools to simulate the `follower_node` on a [modified version](/models/custom_turtlebot/) of the **Turtlebot 3 Waffle Pi**, copyrights **ROBOTIS CO., LTD**, licensed under the [Apache License 2.0](/models/custom_turtlebot/LICENSE).
 
 ## License:
 This package is licensed under the [MIT License](/LICENSE) by Gabriel Nascarella Hishida do Nascimento.
