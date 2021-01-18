@@ -222,7 +222,7 @@ def timer_callback():
         # Turn on the spot to find it again. 
         if just_seen_line:
             just_seen_line = False
-            error = error * 1.2
+            error = error * LOSS_FACTOR
         message.linear.x = 0.0
 
     if mark_side != None:
