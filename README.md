@@ -10,13 +10,13 @@
 #### (Requires a ROS2 distribution)
 
 * Clone this repository in your ROS2 workspace
-* Rename it as `follower`
 * Build the package (`colcon build --symlink-install`)
 
 
 ## Launching the simulation:
 #### (Requires both `gazebo_ros` and `turtlebot3_gazebo` ROS2 packages)
 
+* Set `export ROS_DOMAIN_ID=30 #TURTLEBOT3` and `export TURTLEBOT3_MODEL=waffle` to the environment
 * Add `follower/models` to your `$GAZEBO_MODEL_PATH` environment variable
 * Launch the simulation (`ros2 launch follower new_track.launch.py`)
 
