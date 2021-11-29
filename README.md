@@ -26,11 +26,11 @@
 * Run the node (`ros2 run follower follower_node`)
 * Start the robot (`ros2 service call /start_follower std_srvs/srv/Empty`)
 
-![screenshot1](docs/screenshots/screenshot1.png)
-![screenshot2](docs/screenshots/screenshot2.png)
-![screenshot3](docs/screenshots/screenshot3.png)
+![screenshot1](follower/docs/screenshots/screenshot1.png)
+![screenshot2](follower/docs/screenshots/screenshot2.png)
+![screenshot3](follower/docs/screenshots/screenshot3.png)
 
-Please check [docs/about.md](/docs/about.md) for more information.
+Please check [follower/docs/about.md](/follower/docs/about.md) for more information.
 
 ## Special thanks to:
 * The authors of `Programming Robots with ROS: A Practical Introduction to the Robot Operating System` (and reference code in https://github.com/osrf/rosbook)
