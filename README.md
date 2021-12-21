@@ -21,7 +21,7 @@
 * Launch the simulation (`ros2 launch follower new_track.launch.py`)
 
 ## Running the line follower node: 
-#### (Requires both `cv2` and `cv_bridge` python libraries)
+#### (Requires both `cv2` and `cv_bridge` python modules)
 
 * Run the node (`ros2 run follower follower_node`)
 * Start the robot (`ros2 service call /start_follower std_srvs/srv/Empty`)
