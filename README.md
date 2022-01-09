@@ -30,7 +30,8 @@
 ![screenshot2](follower/docs/screenshots/screenshot2.png)
 ![screenshot3](follower/docs/screenshots/screenshot3.png)
 
-Please check [follower/docs/about.md](/follower/docs/about.md) for more information.
+#### Video demo: https://www.youtube.com/watch?v=E3LZQBVdJgE
+#### Please check [follower/docs/about.md](/follower/docs/about.md) for more information.
 
 ## Special thanks to:
 * The authors of `Programming Robots with ROS: A Practical Introduction to the Robot Operating System` (and reference code in https://github.com/osrf/rosbook)
