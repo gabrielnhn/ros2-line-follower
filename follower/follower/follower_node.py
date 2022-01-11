@@ -46,7 +46,7 @@ FINALIZATION_PERIOD = 4
 MAX_ERROR = 30
 
 # BGR values to filter only the selected color range
-lower_bgr_values = np.array([31,  42,  53])
+lower_bgr_values = np.array([143,  198,  0])
 upper_bgr_values = np.array([255, 255, 255])
 
 def crop_size(height, width):
