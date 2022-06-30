@@ -16,6 +16,10 @@ import numpy as np
 import cv2
 import cv_bridge
 
+import serial
+ser = serial.Serial('/dev/ttyACM0')  # open serial port
+
+
 # Create a bridge between ROS and OpenCV
 bridge = cv_bridge.CvBridge()
 
@@ -273,10 +277,13 @@ def timer_callback():
 
     # Publish the message to 'cmd_vel'
     if should_move:
-        publisher.publish(message)
+        # publisher.publish(message)
+        serial_msg = f"{message.linear.x} {message.angular.z}\n"
+        ser.write(serial_msg.encode("ascii"))     # write a string
+
     else:
         empty_message = Twist()
-        publisher.publish(empty_message)
+        # publisher.publish(empty_message)
 
 
 def main():
