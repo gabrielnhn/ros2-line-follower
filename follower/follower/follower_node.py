@@ -31,7 +31,7 @@ MIN_AREA = 500
 MIN_AREA_TRACK = 5000
 
 # Robot's speed when following the line
-LINEAR_SPEED = 0.2
+LINEAR_SPEED = 120.0
 
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error value)
@@ -278,7 +278,7 @@ def timer_callback():
     # Publish the message to 'cmd_vel'
     if should_move:
         # publisher.publish(message)
-        serial_msg = f"{message.linear.x} {message.angular.z}\n"
+        serial_msg = f"{int(message.linear.x)} {int(message.angular.z)}\n"
         ser.write(serial_msg.encode("ascii"))     # write a string
 
     else:
@@ -293,7 +293,7 @@ def main():
 
     global publisher
     publisher = node.create_publisher(Twist, '/cmd_vel', rclpy.qos.qos_profile_system_default)
-    subscription = node.create_subscription(Image, 'camera/image_raw',
+    subscription = node.create_subscription(Image, '/image',
                                             image_callback,
                                             rclpy.qos.qos_profile_sensor_data)
 
