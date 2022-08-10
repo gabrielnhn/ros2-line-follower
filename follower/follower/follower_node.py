@@ -35,7 +35,7 @@ MIN_AREA = 500
 MIN_AREA_TRACK = 5000
 
 # Robot's speed when following the line
-LINEAR_SPEED = 30.0
+LINEAR_SPEED = 20.0
 
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error value)
@@ -284,6 +284,10 @@ def process_frame(image_input):
     if should_move:
         motor_left.run(int(linear - angular))
         motor_right.run(int(linear + angular))
+
+    else:
+        motor_left.stop()
+        motor_right.stop()
 
 
 def timeout(signum, frame):

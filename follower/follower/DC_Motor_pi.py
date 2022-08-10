@@ -45,21 +45,25 @@ class DC_Motor:
 
     def run(self, value):
         """-100 to 100"""
-        if value == 0:
-            self.stop()
 
-        elif value > 0:
-            if value > 100:
-                value = 100
-            
-            self.forward(value)
-        
-        else: # less than 0
-            if value < -100:
-                value = -100
-            
-            self.backwards(-value)
+        try:
+            if value == 0:
+                self.stop()
 
+            elif value > 0:
+                if value > 100:
+                    value = 100
+                
+                self.forward(value)
+            
+            else: # less than 0
+                if value < -100:
+                    value = -100
+                
+                self.backwards(-value)
+        except Exception as e:
+            print(value)
+            raise e
 
 
 
