@@ -97,6 +97,7 @@ def stop_follower_callback(request, response):
     """
     Stop the robot
     """
+    print("STOPPED!")
     global should_move
     global finalization_countdown
     should_move = False
@@ -298,23 +299,23 @@ def main():
         try: 
             process_frame(image)
 
-            if not should_move:
-                try:
-                # ask user whether robot should move:
+            try:
+            # ask user whether robot should move:
+                signal.setitimer(signal.ITIMER_REAL, 0.01)
+                inp = input()
+                if inp == "start":
+                    start_follower_callback(None, None)
 
-                    signal.setitimer(signal.ITIMER_REAL, 0.01)
-                    inp = input()
-                    if inp == "start":
-                        start_follower_callback(None, None)
+                elif inp == "stop":
+                    stop_follower_callback(None, None)
 
-                except TimeoutError: 
-                    pass
+            except TimeoutError: 
+                pass
 
             retval, image = video.read()
         
         except TimeoutError:
-            if should_move: 
-                pass
+            pass
 
     GPIO.cleanup()
     print("Exiting...")
