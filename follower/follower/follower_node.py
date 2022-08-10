@@ -91,6 +91,8 @@ def start_follower_callback(request, response):
     should_move = True
     right_mark_count = 0
     finalization_countdown = None
+
+    print(">>", end="")
     return response
 
 def stop_follower_callback(request, response):
@@ -102,6 +104,8 @@ def stop_follower_callback(request, response):
     global finalization_countdown
     should_move = False
     finalization_countdown = None
+
+    print(">>", end="")
     return response
 
 
@@ -169,8 +173,6 @@ def process_frame(image_input):
     so it can follow the contour
     """
 
-    # print("BRUH")
-
 
     global error
     global just_seen_line
@@ -236,7 +238,7 @@ def process_frame(image_input):
             if right_mark_count > 1:
                 # Start final countdown to stop the robot
                 finalization_countdown = int(FINALIZATION_PERIOD / TIMER_PERIOD) + 1
-                print("Finalization Process has begun!")
+                print("\nFinalization Process has begun!\n>>", end="")
 
             
             just_seen_right_mark = True
@@ -306,11 +308,9 @@ def main():
                 inp = input()
                 if inp == "start":
                     start_follower_callback(None, None)
-                    print(">>", end="")
 
                 elif inp == "stop":
                     stop_follower_callback(None, None)
-                    print(">>", end="")
 
 
             except TimeoutError: 
