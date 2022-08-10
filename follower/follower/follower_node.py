@@ -277,8 +277,8 @@ def process_frame(image_input):
 
     # Publish the message to 'cmd_vel'
     if should_move:
-        motor_left.run(linear - angular)
-        motor_right.run(linear + angular)
+        motor_left.run(int(linear - angular))
+        motor_right.run(int(linear + angular))
 
 
     else:
