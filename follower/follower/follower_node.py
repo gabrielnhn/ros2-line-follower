@@ -292,8 +292,9 @@ def main():
     # Use system signals to stop input()
     
     video = cv2.VideoCapture(0)
-
     retval, image = video.read()
+
+    print(">>", end="")
 
     while retval:
         try: 
@@ -305,9 +306,12 @@ def main():
                 inp = input()
                 if inp == "start":
                     start_follower_callback(None, None)
+                    print(">>", end="")
 
                 elif inp == "stop":
                     stop_follower_callback(None, None)
+                    print(">>", end="")
+
 
             except TimeoutError: 
                 pass
