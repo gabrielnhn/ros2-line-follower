@@ -39,7 +39,7 @@ LINEAR_SPEED = 30.0
 
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error value)
-KP = 1.5/100 
+KP = 15/100 
 
 # If the line is completely lost, the error value shall be compensated by:
 LOSS_FACTOR = 1.2
@@ -247,7 +247,7 @@ def process_frame(image_input):
     # Determine the speed to turn and get the line in the center of the camera.
     angular = float(error) * -KP
 
-    debug_str = f"Error: {error} | Angular: {angular} | Linear: {linear}"
+    debug_str = f"Angular: {int(angular)} | Linear: {linear} | Error: {error}"
     # print(debug_str)
 
     text_size, _ = cv2.getTextSize(debug_str, cv2.FONT_HERSHEY_PLAIN, 2, 2)
