@@ -8,8 +8,9 @@ __author__ = "Gabriel Nascarella Hishida do Nascimento"
 
 import numpy as np
 import cv2
-import RPi.GPIO as GPIO
 import time
+import signal
+import RPi.GPIO as GPIO
 from DC_Motor_pi import DC_Motor
 
 
@@ -83,6 +84,7 @@ def start_follower_callback(request, response):
     Start the robot.
     In other words, allow it to move (again)
     """
+    print("STARTING!")
     global should_move
     global right_mark_count
     global finalization_countdown
@@ -223,7 +225,7 @@ def process_frame(image_input):
         linear = 0.0
 
     if mark_side != None:
-        print("mark_side: {}".format(mark_side))
+        # print("mark_side: {}".format(mark_side))
 
         if (mark_side == "right") and (finalization_countdown == None) and \
             (abs(error) <= MAX_ERROR) and (not just_seen_right_mark):
@@ -245,7 +247,7 @@ def process_frame(image_input):
     angular = float(error) * -KP
 
     debug_str = f"Error: {error} | Angular: {angular} | Linear: {linear}"
-    print(debug_str)
+    # print(debug_str)
 
     text_size, _ = cv2.getTextSize(debug_str, cv2.FONT_HERSHEY_PLAIN, 2, 2)
     text_w, text_h = text_size
@@ -281,22 +283,38 @@ def process_frame(image_input):
         motor_right.run(int(linear + angular))
 
 
-    else:
-        pass
-        # empty_message = Twist()
-        # publisher.publish(empty_message)
-
+def timeout(signum, frame):
+    raise TimeoutError
 
 def main():
+    signal.signal(signal.SIGALRM, timeout)
+    # Use system signals to stop input()
+    
     video = cv2.VideoCapture(0)
 
     retval, image = video.read()
 
     while retval:
+        try: 
+            process_frame(image)
 
-        process_frame(image)
+            if not should_move:
+                try:
+                # ask user whether robot should move:
 
-        retval, image = video.read()
+                    signal.setitimer(signal.ITIMER_REAL, 0.01)
+                    inp = input()
+                    if inp == "start":
+                        start_follower_callback(None, None)
+
+                except TimeoutError: 
+                    pass
+
+            retval, image = video.read()
+        
+        except TimeoutError:
+            if should_move: 
+                pass
 
     GPIO.cleanup()
     print("Exiting...")
