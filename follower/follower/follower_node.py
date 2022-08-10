@@ -6,22 +6,25 @@ You may change the parameters to your liking.
 """
 __author__ = "Gabriel Nascarella Hishida do Nascimento"
 
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image
-from geometry_msgs.msg import Twist
-from std_srvs.srv import Empty
-
 import numpy as np
 import cv2
-import cv_bridge
+import RPi.GPIO as GPIO
+import time
+from DC_Motor_pi import DC_Motor
 
-import serial
-ser = serial.Serial('/dev/ttyACM0')  # open serial port
 
+# pins setup
+clockwise_pin_1 = 11
+counterclockwise_pin_1 = 13
+pwm_pin_1 = 12
 
-# Create a bridge between ROS and OpenCV
-bridge = cv_bridge.CvBridge()
+clockwise_pin_2 = 29
+counterclockwise_pin_2 = 31
+pwm_pin_2 = 32
+
+motor_left = DC_Motor(clockwise_pin_1, counterclockwise_pin_1, pwm_pin_1)
+motor_right = DC_Motor(clockwise_pin_2, counterclockwise_pin_2, pwm_pin_2)
+
 
 ## User-defined parameters: (Update these values to your liking)
 # Minimum size for a contour to be considered anything
@@ -31,7 +34,7 @@ MIN_AREA = 500
 MIN_AREA_TRACK = 5000
 
 # Robot's speed when following the line
-LINEAR_SPEED = 120.0
+LINEAR_SPEED = 30.0
 
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error value)
@@ -98,14 +101,6 @@ def stop_follower_callback(request, response):
     finalization_countdown = None
     return response
 
-def image_callback(msg):
-    """
-    Function to be called whenever a new Image message arrives.
-    Update the global variable 'image_input'
-    """
-    global image_input
-    image_input = bridge.imgmsg_to_cv2(msg,desired_encoding='bgr8')
-    # node.get_logger().info('Received image')
 
 def get_contour_data(mask, out):
     """
@@ -204,7 +199,7 @@ def timer_callback():
     line, mark_side = get_contour_data(mask, output[crop_h_start:crop_h_stop, crop_w_start:crop_w_stop])  
     # also get the side in which the track mark "is"
     
-    message = Twist()
+    # message = Twist()
     
     if line:
     # if there even is a line in the image:
@@ -215,7 +210,7 @@ def timer_callback():
         # and the center of the line
         error = x - width//2
 
-        message.linear.x = LINEAR_SPEED
+        linear = LINEAR_SPEED
         just_seen_line = True
 
         # plot the line centroid on the image
@@ -227,7 +222,7 @@ def timer_callback():
         if just_seen_line:
             just_seen_line = False
             error = error * LOSS_FACTOR
-        message.linear.x = 0.0
+        linear = 0.0
 
     if mark_side != None:
         print("mark_side: {}".format(mark_side))
@@ -249,10 +244,8 @@ def timer_callback():
 
     
     # Determine the speed to turn and get the line in the center of the camera.
-    message.angular.z = float(error) * -KP
-    print("Error: {} | Angular Z: {}, ".format(error, message.angular.z))
-    
-
+    angular = float(error) * -KP
+    print("Error: {} | Angular Z: {}, ".format(error, angular))
 
 
     # Plot the boundaries where the image was cropped
@@ -277,39 +270,36 @@ def timer_callback():
 
     # Publish the message to 'cmd_vel'
     if should_move:
-        # publisher.publish(message)
-        serial_msg = f"{int(message.linear.x)} {int(message.angular.z)}\n"
-        ser.write(serial_msg.encode("ascii"))     # write a string
+        motor_left.run(linear - angular)
+        motor_right.run(linear + angular)
+
 
     else:
-        empty_message = Twist()
+        # empty_message = Twist()
         # publisher.publish(empty_message)
 
 
 def main():
-    rclpy.init()
-    global node
-    node = Node('follower')
+    video = cv2.videoCapture()
 
-    global publisher
-    publisher = node.create_publisher(Twist, '/cmd_vel', rclpy.qos.qos_profile_system_default)
-    subscription = node.create_subscription(Image, '/image',
-                                            image_callback,
-                                            rclpy.qos.qos_profile_sensor_data)
+    retval, image = video.read()
 
-    timer = node.create_timer(TIMER_PERIOD, timer_callback)
+    while retval:
+        image_input = image
 
-    start_service = node.create_service(Empty, 'start_follower', start_follower_callback)
-    stop_service = node.create_service(Empty, 'stop_follower', stop_follower_callback)
+        if not should_move:
+            inp = input()
+            if inp == "start":
+                start_follower_callback(None, None)
 
-    rclpy.spin(node)
+        timer_callback()
+
+        retval, image = video.read()
+
 
 try:
     main()
-except (KeyboardInterrupt, rclpy.exceptions.ROSInterruptException):
-    empty_message = Twist()
-    publisher.publish(empty_message)
-
-    node.destroy_node()
-    rclpy.shutdown()
-    exit()
+except:
+    del motor_left
+    del motor_right
+    GPIO.cleanup()

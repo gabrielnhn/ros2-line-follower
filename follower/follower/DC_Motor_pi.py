@@ -42,6 +42,27 @@ class DC_Motor:
         GPIO.output(self.counterclockwise_pin, GPIO.HIGH)
         self.speed(0)
 
+
+    def run(self, value):
+        """-100 to 100"""
+        if value == 0:
+            self.stop()
+
+        elif value > 0:
+            if value > 100:
+                value = 100
+            
+            self.forward(value)
+        
+        else: # less than 0
+            if value < -100:
+                value = -100
+            
+            self.backwards(value)
+
+
+
+
     def __del__(self):
         self.pwm_control.stop()
         
