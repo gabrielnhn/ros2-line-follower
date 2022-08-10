@@ -275,6 +275,7 @@ def timer_callback():
 
 
     else:
+        pass
         # empty_message = Twist()
         # publisher.publish(empty_message)
 
