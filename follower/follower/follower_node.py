@@ -281,7 +281,7 @@ def timer_callback():
 
 
 def main():
-    video = cv2.videoCapture()
+    video = cv2.VideoCapture()
 
     retval, image = video.read()
 
