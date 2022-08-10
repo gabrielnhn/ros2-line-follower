@@ -160,15 +160,16 @@ def get_contour_data(mask, out):
 
     return (line, mark_side)
 
-def timer_callback():
+def process_frame(image_input):
     """
-    Function to be called when the timer ticks.
     According to an image 'image_input', determine the speed of the robot
     so it can follow the contour
     """
 
+    # print("BRUH")
+
+
     global error
-    global image_input
     global just_seen_line
     global just_seen_right_mark
     global should_move
@@ -176,12 +177,16 @@ def timer_callback():
     global finalization_countdown
 
     # Wait for the first image to be received
+
+    print(type(image_input))
     if type(image_input) != np.ndarray:
         return
 
+    print("BRUH")
+
     height, width, _ = image_input.shape
 
-    image = image_input.copy()
+    image = image_input
 
     global crop_w_start
     crop_h_start, crop_h_stop, crop_w_start, crop_w_stop = crop_size(height, width)
@@ -281,21 +286,18 @@ def timer_callback():
 
 
 def main():
-    video = cv2.VideoCapture()
+    video = cv2.VideoCapture(0)
 
     retval, image = video.read()
 
     while retval:
-        image_input = image
 
-        if not should_move:
-            inp = input()
-            if inp == "start":
-                start_follower_callback(None, None)
-
-        timer_callback()
+        process_frame(image)
 
         retval, image = video.read()
+
+    GPIO.cleanup()
+    print("exiting...")
 
 
 try:
