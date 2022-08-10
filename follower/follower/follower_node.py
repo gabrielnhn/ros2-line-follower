@@ -176,13 +176,6 @@ def process_frame(image_input):
     global right_mark_count
     global finalization_countdown
 
-    # Wait for the first image to be received
-
-    print(type(image_input))
-    if type(image_input) != np.ndarray:
-        return
-
-    print("BRUH")
 
     height, width, _ = image_input.shape
 
@@ -250,14 +243,23 @@ def process_frame(image_input):
     
     # Determine the speed to turn and get the line in the center of the camera.
     angular = float(error) * -KP
-    print("Error: {} | Angular Z: {}, ".format(error, angular))
 
+    debug_str = f"Error: {error} | Angular: {angular} | Linear: {linear}"
+    print(debug_str)
 
+    text_size, _ = cv2.getTextSize(debug_str, cv2.FONT_HERSHEY_PLAIN, 2, 2)
+    text_w, text_h = text_size
+    cv2.rectangle(output, (0, 90), (text_w, 110 + text_h), (255,255,255), -1)
+    cv2.putText(output, debug_str, (0, 100 + text_h + 2 - 1), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+    
+    
     # Plot the boundaries where the image was cropped
     cv2.rectangle(output, (crop_w_start, crop_h_start), (crop_w_stop, crop_h_stop), (0,0,255), 2)
-
     # Uncomment to show the binary picture
     #cv2.imshow("mask", mask)
+
+
+
 
     # Show the output image to the user
     cv2.imshow("output", output)
@@ -297,14 +299,19 @@ def main():
         retval, image = video.read()
 
     GPIO.cleanup()
-    print("exiting...")
+    print("Exiting...")
 
 
 try:
     main()
+
+except KeyboardInterrupt:
+    print("\nExiting...")
+
 except Exception as e:
+    print(e)
+
+finally:
     del motor_left
     del motor_right
     GPIO.cleanup()
-
-    print(e)
