@@ -300,7 +300,9 @@ def main():
 
 try:
     main()
-except:
+except Exception as e:
     del motor_left
     del motor_right
     GPIO.cleanup()
+
+    print(e)
