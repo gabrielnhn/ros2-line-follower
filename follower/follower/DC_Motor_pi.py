@@ -58,7 +58,7 @@ class DC_Motor:
             if value < -100:
                 value = -100
             
-            self.backwards(value)
+            self.backwards(-value)
 
 
 

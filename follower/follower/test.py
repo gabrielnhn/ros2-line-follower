@@ -9,9 +9,9 @@ clockwise_pin_1 = 11
 counterclockwise_pin_1 = 13
 pwm_pin_1 = 12
 
-clockwise_pin_2 = 29
-counterclockwise_pin_2 = 31
-pwm_pin_2 = 32
+clockwise_pin_2 = 15
+counterclockwise_pin_2 = 16
+pwm_pin_2 = 18
 
 motor_1 = DC_Motor(clockwise_pin_1, counterclockwise_pin_1, pwm_pin_1)
 
